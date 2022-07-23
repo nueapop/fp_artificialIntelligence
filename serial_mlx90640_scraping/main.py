@@ -140,4 +140,8 @@ class scraping:
             csvWrite(data, name).processCount()
 
 if __name__ == '__main__':
-    scraping().process()
+    try:
+        scraping().process()
+    except:
+        error("Error")
+        exit()

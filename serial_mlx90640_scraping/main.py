@@ -1,6 +1,10 @@
+from distutils.log import error
+import os
+import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
 import serial.tools.list_ports
+from datetime import datetime
 
 sns.set_style({'font.family': 'Times New Roman'})
 
@@ -45,8 +49,10 @@ class ReadLine:
                 self.buf.extend(data)
 
 class plot:
-    def __init__(self, data):
+    def __init__(self, data, timeNow, name):
         self.data = data
+        self.time = int(datetime.timestamp(timeNow))
+        self.address = "./data/" + name + "/images/" + str(self.time) + ".png"
 
     def processPlot(self):
         frame = [float(x) for x in self.data.split(',')]
@@ -56,8 +62,55 @@ class plot:
             for w in range(32):
                 t = frame[h * 32 + w]
                 frame2D[h].append(t)
-        sns.heatmap(frame2D, annot=True, cmap="coolwarm", linewidths=.1, annot_kws={"size":6}, yticklabels=False, xticklabels=False, vmin=28, vmax=35)
-        plt.show()
+        sns.heatmap(frame2D, annot=True, cmap="coolwarm", linewidths=.1, annot_kws={"size":6}, yticklabels=False, xticklabels=False, vmin=27, vmax=35)
+        plt.savefig(self.address)
+        plt.close()
+
+class csvWrite:
+    def __init__(self, data, name):
+        self.data = data
+        self.addressRaw = "./data/" + name + "/raw.csv"
+        self.addressCount = "./data/" + name + "/count.csv"
+
+    def processRaw(self):
+        frame = [int(x) for x in self.data.split(',')]
+        df = pd.DataFrame(frame)
+        df.T.to_csv(self.addressRaw, mode="a", header=False, index=False)
+
+    def processCount(self):
+        a = 0
+        b = 0
+        c = 0
+        d = 0
+        e = 0
+        f = 0
+        g = 0
+        h = 0
+        error = 0
+        total = 0
+        for i in self.data.split(','):
+            count = int(i)
+            if count >= 38 and count < 40:
+                a += 1
+            elif count >= 36 and count < 38:
+                b += 1
+            elif count >= 34 and count < 36:
+                c += 1
+            elif count >= 32 and count < 34:
+                d += 1
+            elif count >= 30 and count < 32:
+                e += 1
+            elif count >= 28 and count < 30:
+                f += 1
+            elif count >= 26 and count < 28:
+                g += 1
+            elif count >= 24 and count < 26:
+                h += 1
+            else:
+                error += 1
+            total += 1
+        df = pd.DataFrame([[a, b, c, d, e, f, g, h, error, total]])
+        df.to_csv(self.addressCount, mode="a", header=False, index=False, sep="\t")
 
 class scraping:
     def __init__(self):
@@ -65,13 +118,26 @@ class scraping:
 
     def process(self):
         serialRead = ReadLine(serial.Serial(self.port, 115200))
-        name = input("Enter name of file: ")
+        while True:
+            name = input("Enter name of file: ")
+            if name in os.listdir("data"):
+                print("File already exists.")
+                continue
+            else:
+                os.mkdir("./data/" + name)
+                os.mkdir("./data/" + name + "/images")
+                df = pd.DataFrame([["38-39", "36-37", "34-35", "32-33", "30-31", "28-29", "26-27", "24-25", "Error", "Total"]])
+                df.to_csv("./data/" + name + "/count.csv", mode="a", header=False, index=False, sep="\t")
+                break
         number = int(input("Enter number of frames: "))
         for i in range(number):
             data = str(serialRead.readline())
             data = data.replace("bytearray(b'[", "")
             data = data.replace("]\\r\\n')", "")
-            plot(data).processPlot()
+            timeNow = datetime.now()
+            plot(data, timeNow, name).processPlot()
+            csvWrite(data, name).processRaw()
+            csvWrite(data, name).processCount()
 
 if __name__ == '__main__':
     scraping().process()

@@ -1,5 +1,5 @@
-from distutils.log import error
 import os
+import time
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
@@ -62,20 +62,21 @@ class plot:
             for w in range(32):
                 t = frame[h * 32 + w]
                 frame2D[h].append(t)
-        sns.heatmap(frame2D, annot=True, cmap="coolwarm", linewidths=.1, annot_kws={"size":6}, yticklabels=False, xticklabels=False, vmin=27, vmax=35)
+        sns.heatmap(frame2D, annot=True, cmap="coolwarm", linewidths=.1, annot_kws={"size":6}, yticklabels=False, xticklabels=False, vmin=28.5, vmax=30)
+        plt.title("Heatmap of MLX90640 data: " + str(self.time))
         plt.savefig(self.address)
         plt.close()
+        time.sleep(0.5)
 
 class csvWrite:
-    def __init__(self, data, name):
+    def __init__(self, data, address):
         self.data = data
-        self.addressRaw = "./data/" + name + "/raw.csv"
-        self.addressCount = "./data/" + name + "/count.csv"
+        self.address = address
 
     def processRaw(self):
         frame = [int(x) for x in self.data.split(',')]
         df = pd.DataFrame(frame)
-        df.T.to_csv(self.addressRaw, mode="a", header=False, index=False)
+        df.T.to_csv(self.address, mode="a", header=False, index=False)
 
     def processCount(self):
         a = 0
@@ -110,7 +111,7 @@ class csvWrite:
                 error += 1
             total += 1
         df = pd.DataFrame([[a, b, c, d, e, f, g, h, error, total]])
-        df.to_csv(self.addressCount, mode="a", header=False, index=False, sep="\t")
+        df.to_csv(self.address, mode="a", header=False, index=False, sep="\t")
 
 class scraping:
     def __init__(self):
@@ -136,12 +137,5 @@ class scraping:
             data = data.replace("]\\r\\n')", "")
             timeNow = datetime.now()
             plot(data, timeNow, name).processPlot()
-            csvWrite(data, name).processRaw()
-            csvWrite(data, name).processCount()
-
-if __name__ == '__main__':
-    try:
-        scraping().process()
-    except:
-        error("Error")
-        exit()
+            csvWrite(data, address="./data/" + name + "/raw.csv").processRaw()
+            csvWrite(data, address="./data/" + name + "/count.csv").processCount()

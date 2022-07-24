@@ -139,3 +139,10 @@ class scraping:
             plot(data, timeNow, name).processPlot()
             csvWrite(data, address="./data/" + name + "/raw.csv").processRaw()
             csvWrite(data, address="./data/" + name + "/count.csv").processCount()
+
+if __name__ == '__main__':
+    try:
+        scraping().process()
+    except:
+        print("Error")
+        scraping().process()

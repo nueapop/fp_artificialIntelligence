@@ -62,7 +62,7 @@ class plot:
             for w in range(32):
                 t = frame[h * 32 + w]
                 frame2D[h].append(t)
-        sns.heatmap(frame2D, annot=True, cmap="coolwarm", linewidths=.1, annot_kws={"size":6}, yticklabels=False, xticklabels=False, vmin=28.5, vmax=30)
+        sns.heatmap(frame2D, annot=True, cmap="coolwarm", linewidths=.1, annot_kws={"size":6}, yticklabels=False, xticklabels=False, vmin=27, vmax=28)
         plt.title("Heatmap of MLX90640 data: " + str(self.time))
         plt.savefig(self.address)
         plt.close()

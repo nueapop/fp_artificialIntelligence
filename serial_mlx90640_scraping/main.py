@@ -139,6 +139,7 @@ class scraping:
             plot(data, timeNow, name).processPlot()
             csvWrite(data, address="./data/" + name + "/raw.csv").processRaw()
             csvWrite(data, address="./data/" + name + "/count.csv").processCount()
+            print("Frame " + str(i + 1) + " of " + str(number) + " processed.")
 
 if __name__ == '__main__':
     try:

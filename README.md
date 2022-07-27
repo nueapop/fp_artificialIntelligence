@@ -1,6 +1,6 @@
 # fp_artificialIntelligence
-# Censor Test case
-## Adafruit MLX90640
+## Censor Test case
+### Adafruit MLX90640
     [X] None Person WallView
     [X] One Person WallView
     [X] Two Person WallView

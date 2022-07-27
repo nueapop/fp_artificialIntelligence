@@ -5,6 +5,10 @@
     [X] One Person WallView
     [X] Two Person WallView
     [X] Three Person WallView
+    [ ] None Person WallCeilingView
+    [ ] One Person WallCeilingView
+    [ ] Two Person WallCeilingView
+    [ ] Three Person WallCeilingView
 ## License
 
 [GNU](https://github.com/nueapop/fp_artificialIntelligence/blob/main/LICENSE)

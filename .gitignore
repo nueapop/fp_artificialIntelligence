@@ -131,3 +131,4 @@ dmypy.json
 # custom
 *.png
 *.mp4
+pytorch_cnn/data

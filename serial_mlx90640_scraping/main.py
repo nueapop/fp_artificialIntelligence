@@ -2,10 +2,13 @@ import os
 import time
 import pandas as pd
 import seaborn as sns
-import matplotlib.pyplot as plt
 import serial.tools.list_ports
+import matplotlib.pyplot as plt
 from datetime import datetime
+from rich.console import Console
+from rich.prompt import Prompt
 
+console = Console()
 sns.set_style({'font.family': 'Times New Roman'})
 
 class detectSerial:
@@ -16,14 +19,14 @@ class detectSerial:
         for port, desc, hwid in sorted(serial.tools.list_ports.comports()):
             self.serialList.append(port)
         if len(self.serialList) > 1:
-            print("Serial ports found:")
+            console.print("Serial ports found:", style="bold green")
             for i in range(len(self.serialList)):
-                print(str(i + 1) + ": " + self.serialList[i])
-            return input("Select serial port: ")
+                console.print(str(i + 1) + ": " + self.serialList[i])
+            return Prompt.ask("[bold cyan]Select serial port[/bold cyan] ", style="bold green")
         elif len(self.serialList) == 1:
             return self.serialList[0]
         else:
-            print("No serial ports found.")
+            console.print("No serial ports found.", style="bold red")
             exit()
 
 class ReadLine:
@@ -120,9 +123,9 @@ class scraping:
     def process(self):
         serialRead = ReadLine(serial.Serial(self.port, 115200))
         while True:
-            name = input("Enter name of file: ")
+            name = Prompt.ask("[bold cyan]Enter name of file[/bold cyan] ")
             if name in os.listdir("data"):
-                print("File already exists.")
+                console.print("File already exists.", style="bold red")
                 continue
             else:
                 os.mkdir("./data/" + name)
@@ -130,20 +133,21 @@ class scraping:
                 df = pd.DataFrame([["38-39", "36-37", "34-35", "32-33", "30-31", "28-29", "26-27", "24-25", "Error", "Total"]])
                 df.to_csv("./data/" + name + "/count.csv", mode="a", header=False, index=False, sep="\t")
                 break
-        number = int(input("Enter number of frames: "))
-        for i in range(number):
-            data = str(serialRead.readline())
-            data = data.replace("bytearray(b'[", "")
-            data = data.replace("]\\r\\n')", "")
-            timeNow = datetime.now()
-            plot(data, timeNow, name).processPlot()
-            csvWrite(data, address="./data/" + name + "/raw.csv").processRaw()
-            csvWrite(data, address="./data/" + name + "/count.csv").processCount()
-            print("Frame " + str(i + 1) + " of " + str(number) + " processed.")
+        number = int(Prompt.ask("[bold cyan]Enter number of frames[/bold cyan] [bold green][DEFAULT[/bold green] [bold red]1000[/bold red] [bold green]FRAME][/bold green] ", default=1000))
+        with console.status("[bold cyan]Scraping on tasks...", spinner="bouncingBar") as status:
+            for i in range(number):
+                data = str(serialRead.readline())
+                data = data.replace("bytearray(b'[", "")
+                data = data.replace("]\\r\\n')", "")
+                timeNow = datetime.now()
+                plot(data, timeNow, name).processPlot()
+                csvWrite(data, address="./data/" + name + "/raw.csv").processRaw()
+                csvWrite(data, address="./data/" + name + "/count.csv").processCount()
+                console.log("Frame [green]" + str(i + 1) + "[/green] of [bold green]" + str(number) + "[/bold green] processed.")
 
 if __name__ == '__main__':
     try:
         scraping().process()
     except:
-        print("Error")
+        console.print("Error", style="bold red")
         scraping().process()

@@ -60,13 +60,13 @@ class plot:
     def processPlot(self):
         frame = [float(x) for x in self.data.split(',')]
         frame2D = []
-        for h in range(24):
+        for h in range(8):
             frame2D.append([])
-            for w in range(32):
-                t = frame[h * 32 + w]
+            for w in range(8):
+                t = frame[h * 8 + w]
                 frame2D[h].append(t)
-        sns.heatmap(frame2D, annot=True, cmap="coolwarm", linewidths=.1, annot_kws={"size":6}, yticklabels=False, xticklabels=False, vmin=27, vmax=28)
-        plt.title("Heatmap of MLX90640 data: " + str(self.time) + str(self.roundLoop))
+        sns.heatmap(frame2D, annot=True, cmap="coolwarm", linewidths=.1, annot_kws={"size":6}, yticklabels=False, xticklabels=False, vmin=41, vmax=42)
+        plt.title("Heatmap of AMG8833 data: " + str(self.time) + str(self.roundLoop))
         plt.savefig(self.address)
         plt.close()
 
@@ -93,21 +93,21 @@ class csvWrite:
         total = 0
         for i in self.data.split(','):
             count = int(i)
-            if count >= 38 and count < 40:
+            if count >= 48 and count < 51:
                 a += 1
-            elif count >= 36 and count < 38:
+            elif count >= 45 and count < 48:
                 b += 1
-            elif count >= 34 and count < 36:
+            elif count >= 42 and count < 45:
                 c += 1
-            elif count >= 32 and count < 34:
+            elif count >= 39 and count < 42:
                 d += 1
-            elif count >= 30 and count < 32:
+            elif count >= 36 and count < 39:
                 e += 1
-            elif count >= 28 and count < 30:
+            elif count >= 33 and count < 36:
                 f += 1
-            elif count >= 26 and count < 28:
+            elif count >= 30 and count < 33:
                 g += 1
-            elif count >= 24 and count < 26:
+            elif count >= 27 and count < 30:
                 h += 1
             else:
                 error += 1
@@ -129,7 +129,7 @@ class scraping:
             else:
                 os.mkdir("./data/" + name)
                 os.mkdir("./data/" + name + "/images")
-                df = pd.DataFrame([["38-39", "36-37", "34-35", "32-33", "30-31", "28-29", "26-27", "24-25", "Error", "Total"]])
+                df = pd.DataFrame([["48-50", "45-47", "42-44", "39-41", "36-38", "33-35", "30-32", "27-29", "Error", "Total"]])
                 df.to_csv("./data/" + name + "/count.csv", mode="a", header=False, index=False, sep="\t")
                 break
         number = int(Prompt.ask("[bold cyan]Enter number of frames[/bold cyan] [bold green][DEFAULT[/bold green] [bold red]1000[/bold red] [bold green]FRAME][/bold green] ", default=1000))

@@ -3,6 +3,7 @@
 - MLX90640 Scraping
 - AMG8833 Scraping
 - Data Image To Video
+- Machine Learning 101
 ## Sensor Test case
 ### Adafruit MLX90640
     [ ] None Person WallView

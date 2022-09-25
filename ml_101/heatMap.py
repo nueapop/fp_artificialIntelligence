@@ -56,3 +56,9 @@ plt.yticks(fontsize=15)
 # plt.title(title, loc='center', fontsize=25)
 plt.tight_layout()
 plt.show()
+
+# data = data[(data['Stop'] == False)]
+# data = data[(data['Severity'] == 4)]
+# data = data[(data['DayText'] == "Friday")]
+# data = data[(data['DayText'] == 'Saturday') & (data['Weather_Condition'] == 'Heavy T-Storm / Windy')]
+# data = data[(data['Severity'] == 3) & (data['Weather_Condition'] == 'Overcast')]
